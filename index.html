@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talk Shalk - Instant Voice Chat</title>
+    <title>Talk Shalk - Voice Chat Platform</title>
     <style>
         * {
             margin: 0;
@@ -13,212 +13,478 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             color: white;
+            overflow: hidden;
         }
 
-        .container {
-            text-align: center;
-            max-width: 500px;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .logo {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .tagline {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        .status {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            min-height: 60px;
+        .header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-        }
-
-        .connection-info {
-            display: none;
-            margin-bottom: 2rem;
-        }
-
-        .location {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .flag {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .connect-btn {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            border: none;
-            color: white;
-            font-size: 1.3rem;
-            font-weight: bold;
             padding: 1rem 2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 0.5rem;
-            min-width: 150px;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
         }
 
-        .connect-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        .left-nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
         }
 
-        .connect-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .online-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
         }
 
-        .disconnect-btn {
-            background: linear-gradient(45deg, #ff4757, #ff3838);
-        }
-
-        .controls {
-            margin-top: 2rem;
-        }
-
-        .volume-control {
-            margin: 1rem 0;
-        }
-
-        .volume-control label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .volume-control input {
-            width: 200px;
-            margin: 0 auto;
-        }
-
-        .stats {
-            margin-top: 2rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .pulse {
+        .online-dot {
+            width: 12px;
+            height: 12px;
+            background: #4CAF50;
+            border-radius: 50%;
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+        .filters-btn, .game-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: background 0.3s;
         }
 
-        .audio-visualizer {
-            width: 100%;
-            height: 50px;
+        .filters-btn:hover, .game-btn:hover {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            margin: 1rem 0;
-            display: none;
+        }
+
+        .right-nav {
+            display: flex;
+            gap: 2rem;
+            font-weight: 500;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .nav-link:hover {
+            opacity: 0.8;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        .left-panel {
+            width: 600px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
 
-        .wave {
-            width: 4px;
-            height: 20px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            margin: 0 2px;
-            border-radius: 2px;
-            animation: wave 1s infinite ease-in-out;
+        .logo-circle {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .wave:nth-child(2) { animation-delay: 0.1s; }
-        .wave:nth-child(3) { animation-delay: 0.2s; }
-        .wave:nth-child(4) { animation-delay: 0.3s; }
-        .wave:nth-child(5) { animation-delay: 0.4s; }
+        .logo-text {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+        }
 
-        @keyframes wave {
+        .controls {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .call-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+        }
+
+        .call-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .mute-btn {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+        }
+
+        .report-btn {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
+        .control-label {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .options {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-bar {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .status-text {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cancel-btn {
+            background: #ff9800;
+            border: none;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .right-panel {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .triangle-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .triangle {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: 2px solid #667eea;
+            transform: rotate(45deg);
+        }
+
+        .chat-area {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 0.8rem;
+            border-radius: 25px;
+            color: white;
+            outline: none;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .send-btn {
+            background: #667eea;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .waiting-animation {
+            animation: pulse 1.5s infinite;
+        }
+
+        .connected-indicator {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(76, 175, 80, 0.9);
+            padding: 1rem;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .partner-info {
+            text-align: center;
+        }
+
+        .partner-flag {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .support-section {
+            position: absolute;
+            bottom: 100px;
+            left: 2rem;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .support-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .support-text {
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .audio-bars {
+            display: none;
+            justify-content: center;
+            gap: 4px;
+            margin-top: 1rem;
+        }
+
+        .audio-bar {
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(to top, #4CAF50, #81C784);
+            border-radius: 2px;
+            animation: audio-wave 1s infinite ease-in-out;
+        }
+
+        .audio-bar:nth-child(2) { animation-delay: 0.1s; }
+        .audio-bar:nth-child(3) { animation-delay: 0.2s; }
+        .audio-bar:nth-child(4) { animation-delay: 0.3s; }
+        .audio-bar:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes audio-wave {
             0%, 40%, 100% { transform: scaleY(0.4); }
             20% { transform: scaleY(1); }
+        }
+
+        .user-count {
+            font-size: 1.2rem;
+        }
+
+        .disabled {
+            opacity: 0.6;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">Talk Shalk</div>
-        <div class="tagline">Instant Voice Chat with People Worldwide</div>
-        
-        <div class="status" id="status">
-            Ready to connect! Press the button below to start talking.
-        </div>
-
-        <div class="connection-info" id="connectionInfo">
-            <div class="flag" id="partnerFlag">🌍</div>
-            <div class="location" id="partnerLocation">Connected to someone from...</div>
-        </div>
-
-        <div class="audio-visualizer" id="audioVisualizer">
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-        </div>
-
-        <div class="controls">
-            <button class="connect-btn" id="connectBtn" onclick="toggleConnection()">
-                🎙️ Start Talking
+    <div class="header">
+        <div class="left-nav">
+            <div class="online-indicator">
+                <div class="online-dot"></div>
+                <span>Online</span>
+                <span class="user-count" id="userCount">247</span>
+            </div>
+            <button class="filters-btn">
+                <span>🔧</span>
+                <span>FILTERS</span>
             </button>
-            
-            <div class="volume-control">
-                <label for="volumeSlider">Volume</label>
-                <input type="range" id="volumeSlider" min="0" max="100" value="80" onchange="adjustVolume()">
+            <button class="game-btn">
+                <span>🎮</span>
+                <span>GAME</span>
+            </button>
+        </div>
+        <div class="right-nav">
+            <a href="#" class="nav-link">Voice Chat</a>
+            <a href="#" class="nav-link">About Us</a>
+            <a href="#" class="nav-link">Contact Us</a>
+            <a href="#" class="nav-link">Blog</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="left-panel">
+            <div class="logo-circle">
+                <div class="logo-text">TALK<br>SHALK</div>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn call-btn" id="callBtn" onclick="toggleCall()">
+                    <span id="callIcon">📞</span>
+                    <div class="control-label">Call</div>
+                </button>
+                <button class="control-btn mute-btn" id="muteBtn" onclick="toggleMute()">
+                    <span>🎤</span>
+                    <div class="control-label">Mute</div>
+                </button>
+                <button class="control-btn report-btn" onclick="reportUser()">
+                    <span>⚠️</span>
+                    <div class="control-label">Report</div>
+                </button>
+            </div>
+
+            <div class="options">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="autoCall" checked>
+                    <label for="autoCall">Enable Auto Call</label>
+                </div>
+                <a href="#" style="color: #81C784; text-decoration: none;">📊 Call History</a>
+            </div>
+
+            <div class="audio-bars" id="audioBars">
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+            </div>
+
+            <div class="status-bar" id="statusBar">
+                <div class="status-text" id="statusText">Ready to connect. Click Call to find someone to talk with.</div>
             </div>
         </div>
 
-        <div class="stats" id="stats">
-            <div>🌍 People online: <span id="onlineCount">1,247</span></div>
-            <div>🎯 Your location: <span id="yourLocation">Loading...</span></div>
-            <div>⏱️ Session time: <span id="sessionTime">00:00</span></div>
+        <div class="right-panel">
+            <div class="triangle-pattern" id="trianglePattern"></div>
+            
+            <div class="connected-indicator" id="connectedIndicator">
+                <div class="partner-info">
+                    <div class="partner-flag" id="partnerFlag">🌍</div>
+                    <div id="partnerLocation">Connected</div>
+                </div>
+            </div>
+
+            <div class="support-section">
+                <div class="support-title">
+                    Support TalkShalk 🤝
+                </div>
+                <div class="support-text">
+                    Dear TalkShalk Community,<br><br>
+                    Your support is the lifeblood of TalkShalk, and we're grateful for your contributions. Whether through donations or other means, your involvement plays a vital role in enhancing and maintaining our platform.
+                    <br><br>
+                    Your generosity assists us in:
+                </div>
+            </div>
+
+            <div class="chat-area">
+                <input type="text" class="chat-input" placeholder="Type a message..." id="chatInput" disabled>
+                <button class="send-btn" onclick="sendMessage()" disabled>
+                    <span>✈️</span>
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
         let isConnected = false;
-        let connectionStartTime = null;
-        let sessionTimer = null;
-        let onlineCountTimer = null;
+        let isSearching = false;
+        let isMuted = false;
+        let currentPartner = null;
+        let searchTimeout = null;
+        let onlineUsers = [];
 
-        // Simulate getting user's location
+        // Generate random online user count
+        function updateUserCount() {
+            const baseCount = 200;
+            const variation = Math.floor(Math.random() * 100);
+            const count = baseCount + variation;
+            document.getElementById('userCount').textContent = count;
+            
+            // Simulate users joining/leaving
+            setTimeout(updateUserCount, 5000 + Math.random() * 10000);
+        }
+
+        // Create triangle pattern
+        function createTrianglePattern() {
+            const pattern = document.getElementById('trianglePattern');
+            const rightPanel = document.querySelector('.right-panel');
+            const panelWidth = rightPanel.offsetWidth;
+            const panelHeight = rightPanel.offsetHeight;
+            
+            for (let i = 0; i < 50; i++) {
+                const triangle = document.createElement('div');
+                triangle.className = 'triangle';
+                triangle.style.left = Math.random() * panelWidth + 'px';
+                triangle.style.top = Math.random() * panelHeight + 'px';
+                triangle.style.animationDelay = Math.random() * 2 + 's';
+                pattern.appendChild(triangle);
+            }
+        }
+
+        // Countries for random partner selection
         const countries = [
             { name: 'United States', flag: '🇺🇸' },
             { name: 'United Kingdom', flag: '🇬🇧' },
@@ -234,145 +500,205 @@
             { name: 'Spain', flag: '🇪🇸' },
             { name: 'Mexico', flag: '🇲🇽' },
             { name: 'Netherlands', flag: '🇳🇱' },
-            { name: 'Sweden', flag: '🇸🇪' },
-            { name: 'Pakistan', flag: '🇵🇰' }
+            { name: 'Sweden', flag: '🇸🇪' }
         ];
-
-        // Set user's location (showing Pakistan since user is in Lahore)
-        document.getElementById('yourLocation').textContent = 'Pakistan 🇵🇰';
-
-        function getRandomCountry() {
-            // Filter out Pakistan for partner location
-            const otherCountries = countries.filter(c => c.name !== 'Pakistan');
-            return otherCountries[Math.floor(Math.random() * otherCountries.length)];
-        }
-
-        function updateOnlineCount() {
-            const baseCount = 1200;
-            const variation = Math.floor(Math.random() * 100) - 50;
-            document.getElementById('onlineCount').textContent = (baseCount + variation).toLocaleString();
-        }
-
-        function startSessionTimer() {
-            connectionStartTime = Date.now();
-            sessionTimer = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - connectionStartTime) / 1000);
-                const minutes = Math.floor(elapsed / 60);
-                const seconds = elapsed % 60;
-                document.getElementById('sessionTime').textContent = 
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }, 1000);
-        }
-
-        function stopSessionTimer() {
-            if (sessionTimer) {
-                clearInterval(sessionTimer);
-                sessionTimer = null;
-            }
-            document.getElementById('sessionTime').textContent = '00:00';
-        }
 
         async function requestMicPermission() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                // Stop the stream immediately as we just needed permission
                 stream.getTracks().forEach(track => track.stop());
                 return true;
             } catch (error) {
-                alert('Microphone access is required for voice chat. Please allow microphone access and try again.');
+                alert('Microphone access required for voice chat. Please allow microphone access.');
                 return false;
             }
         }
 
-        async function toggleConnection() {
-            const connectBtn = document.getElementById('connectBtn');
-            const status = document.getElementById('status');
-            const connectionInfo = document.getElementById('connectionInfo');
-            const audioVisualizer = document.getElementById('audioVisualizer');
+        async function toggleCall() {
+            const callBtn = document.getElementById('callBtn');
+            const callIcon = document.getElementById('callIcon');
+            const statusText = document.getElementById('statusText');
+            const statusBar = document.getElementById('statusBar');
 
-            if (!isConnected) {
-                // Request microphone permission first
+            if (isConnected) {
+                // Disconnect
+                disconnect();
+            } else if (isSearching) {
+                // Cancel search
+                cancelSearch();
+            } else {
+                // Start search
                 const hasPermission = await requestMicPermission();
                 if (!hasPermission) return;
 
-                // Start connection
-                connectBtn.disabled = true;
-                connectBtn.textContent = '🔄 Connecting...';
-                status.textContent = 'Searching for someone to talk with...';
-                status.classList.add('pulse');
+                startSearch();
+            }
+        }
 
-                // Simulate connection delay
-                setTimeout(() => {
-                    isConnected = true;
-                    const partner = getRandomCountry();
-                    
-                    document.getElementById('partnerFlag').textContent = partner.flag;
-                    document.getElementById('partnerLocation').textContent = `Connected to ${partner.name}`;
-                    
-                    status.textContent = '🎙️ Connected! You can now talk.';
-                    status.classList.remove('pulse');
-                    connectionInfo.style.display = 'block';
-                    audioVisualizer.style.display = 'flex';
-                    
-                    connectBtn.textContent = '📞 Disconnect';
-                    connectBtn.classList.add('disconnect-btn');
-                    connectBtn.disabled = false;
-                    
-                    startSessionTimer();
-                    
-                    // Simulate some audio activity
-                    setTimeout(() => {
-                        status.textContent = '🗣️ Partner is speaking...';
-                    }, 3000);
-                    
-                    setTimeout(() => {
-                        status.textContent = '🎙️ Your turn to speak!';
-                    }, 8000);
-                    
-                }, 2000 + Math.random() * 3000); // Random delay 2-5 seconds
-                
+        function startSearch() {
+            isSearching = true;
+            const callBtn = document.getElementById('callBtn');
+            const callIcon = document.getElementById('callIcon');
+            const statusText = document.getElementById('statusText');
+            const statusBar = document.getElementById('statusBar');
+
+            callIcon.textContent = '⏳';
+            statusText.innerHTML = 'Searching for someone to talk with... <button class="cancel-btn" onclick="cancelSearch()">Cancel</button>';
+            statusBar.classList.add('waiting-animation');
+            callBtn.classList.add('disabled');
+
+            // Simulate search time (3-10 seconds)
+            const searchTime = 3000 + Math.random() * 7000;
+            
+            searchTimeout = setTimeout(() => {
+                if (isSearching) {
+                    connectToPartner();
+                }
+            }, searchTime);
+        }
+
+        function cancelSearch() {
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+                searchTimeout = null;
+            }
+            
+            isSearching = false;
+            const callBtn = document.getElementById('callBtn');
+            const callIcon = document.getElementById('callIcon');
+            const statusText = document.getElementById('statusText');
+            const statusBar = document.getElementById('statusBar');
+
+            callIcon.textContent = '📞';
+            statusText.textContent = 'Search cancelled. Click Call to try again.';
+            statusBar.classList.remove('waiting-animation');
+            callBtn.classList.remove('disabled');
+        }
+
+        function connectToPartner() {
+            isSearching = false;
+            isConnected = true;
+            currentPartner = countries[Math.floor(Math.random() * countries.length)];
+
+            const callBtn = document.getElementById('callBtn');
+            const callIcon = document.getElementById('callIcon');
+            const statusText = document.getElementById('statusText');
+            const statusBar = document.getElementById('statusBar');
+            const connectedIndicator = document.getElementById('connectedIndicator');
+            const partnerFlag = document.getElementById('partnerFlag');
+            const partnerLocation = document.getElementById('partnerLocation');
+            const audioBars = document.getElementById('audioBars');
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.querySelector('.send-btn');
+
+            callIcon.textContent = '📞';
+            statusText.textContent = 'Connected! You can now talk.';
+            statusBar.classList.remove('waiting-animation');
+            callBtn.classList.remove('disabled');
+
+            // Show partner info
+            partnerFlag.textContent = currentPartner.flag;
+            partnerLocation.textContent = `Connected to ${currentPartner.name}`;
+            connectedIndicator.style.display = 'block';
+
+            // Enable audio visualization
+            audioBars.style.display = 'flex';
+
+            // Enable chat
+            chatInput.disabled = false;
+            sendBtn.disabled = false;
+            chatInput.placeholder = 'Type a message to your partner...';
+
+            // Change call button to disconnect
+            callBtn.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+        }
+
+        function disconnect() {
+            isConnected = false;
+            currentPartner = null;
+
+            const callBtn = document.getElementById('callBtn');
+            const callIcon = document.getElementById('callIcon');
+            const statusText = document.getElementById('statusText');
+            const connectedIndicator = document.getElementById('connectedIndicator');
+            const audioBars = document.getElementById('audioBars');
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.querySelector('.send-btn');
+
+            callIcon.textContent = '📞';
+            statusText.textContent = 'Disconnected. Click Call to find someone new.';
+            connectedIndicator.style.display = 'none';
+            audioBars.style.display = 'none';
+
+            // Disable chat
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+            chatInput.placeholder = 'Type a message...';
+            chatInput.value = '';
+
+            // Reset call button
+            callBtn.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const muteBtn = document.getElementById('muteBtn');
+            
+            if (isMuted) {
+                muteBtn.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+                muteBtn.querySelector('span').textContent = '🔇';
             } else {
-                // Disconnect
-                isConnected = false;
-                connectBtn.textContent = '🎙️ Start Talking';
-                connectBtn.classList.remove('disconnect-btn');
-                status.textContent = 'Disconnected. Ready for your next conversation!';
-                connectionInfo.style.display = 'none';
-                audioVisualizer.style.display = 'none';
-                stopSessionTimer();
-                
-                // Show brief message then reset
-                setTimeout(() => {
-                    status.textContent = 'Ready to connect! Press the button below to start talking.';
-                }, 3000);
+                muteBtn.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
+                muteBtn.querySelector('span').textContent = '🎤';
             }
         }
 
-        function adjustVolume() {
-            const volume = document.getElementById('volumeSlider').value;
-            // In a real app, this would adjust the audio volume
-            console.log('Volume adjusted to:', volume + '%');
-        }
-
-        // Start the online count updater
-        updateOnlineCount();
-        onlineCountTimer = setInterval(updateOnlineCount, 10000); // Update every 10 seconds
-
-        // Add some interactivity to the audio visualizer
-        setInterval(() => {
+        function reportUser() {
             if (isConnected) {
-                const waves = document.querySelectorAll('.wave');
-                waves.forEach(wave => {
-                    const height = 10 + Math.random() * 30;
-                    wave.style.height = height + 'px';
-                });
+                alert('User reported. You will be disconnected.');
+                disconnect();
+            } else {
+                alert('No active connection to report.');
             }
-        }, 200);
+        }
 
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
-            if (onlineCountTimer) clearInterval(onlineCountTimer);
-            if (sessionTimer) clearInterval(sessionTimer);
+        function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            
+            if (message && isConnected) {
+                // In a real app, this would send the message to the partner
+                console.log('Message sent:', message);
+                chatInput.value = '';
+                
+                // Show message sent feedback
+                const statusText = document.getElementById('statusText');
+                const originalText = statusText.textContent;
+                statusText.textContent = 'Message sent!';
+                setTimeout(() => {
+                    statusText.textContent = originalText;
+                }, 2000);
+            }
+        }
+
+        // Handle Enter key in chat
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createTrianglePattern();
+            updateUserCount();
+        });
+
+        // Handle window resize for triangle pattern
+        window.addEventListener('resize', function() {
+            const pattern = document.getElementById('trianglePattern');
+            pattern.innerHTML = '';
+            createTrianglePattern();
         });
     </script>
 </body>
