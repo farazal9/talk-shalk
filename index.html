@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talk Shalk - Instant Voice Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .status {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .connection-info {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .location {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .flag {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .connect-btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            min-width: 150px;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .connect-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .disconnect-btn {
+            background: linear-gradient(45deg, #ff4757, #ff3838);
+        }
+
+        .controls {
+            margin-top: 2rem;
+        }
+
+        .volume-control {
+            margin: 1rem 0;
+        }
+
+        .volume-control label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .volume-control input {
+            width: 200px;
+            margin: 0 auto;
+        }
+
+        .stats {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .audio-visualizer {
+            width: 100%;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            margin: 1rem 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wave {
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            margin: 0 2px;
+            border-radius: 2px;
+            animation: wave 1s infinite ease-in-out;
+        }
+
+        .wave:nth-child(2) { animation-delay: 0.1s; }
+        .wave:nth-child(3) { animation-delay: 0.2s; }
+        .wave:nth-child(4) { animation-delay: 0.3s; }
+        .wave:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 40%, 100% { transform: scaleY(0.4); }
+            20% { transform: scaleY(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Talk Shalk</div>
+        <div class="tagline">Instant Voice Chat with People Worldwide</div>
+        
+        <div class="status" id="status">
+            Ready to connect! Press the button below to start talking.
+        </div>
+
+        <div class="connection-info" id="connectionInfo">
+            <div class="flag" id="partnerFlag">🌍</div>
+            <div class="location" id="partnerLocation">Connected to someone from...</div>
+        </div>
+
+        <div class="audio-visualizer" id="audioVisualizer">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+        </div>
+
+        <div class="controls">
+            <button class="connect-btn" id="connectBtn" onclick="toggleConnection()">
+                🎙️ Start Talking
+            </button>
+            
+            <div class="volume-control">
+                <label for="volumeSlider">Volume</label>
+                <input type="range" id="volumeSlider" min="0" max="100" value="80" onchange="adjustVolume()">
+            </div>
+        </div>
+
+        <div class="stats" id="stats">
+            <div>🌍 People online: <span id="onlineCount">1,247</span></div>
+            <div>🎯 Your location: <span id="yourLocation">Loading...</span></div>
+            <div>⏱️ Session time: <span id="sessionTime">00:00</span></div>
+        </div>
+    </div>
+
+    <script>
+        let isConnected = false;
+        let connectionStartTime = null;
+        let sessionTimer = null;
+        let onlineCountTimer = null;
+
+        // Simulate getting user's location
+        const countries = [
+            { name: 'United States', flag: '🇺🇸' },
+            { name: 'United Kingdom', flag: '🇬🇧' },
+            { name: 'Germany', flag: '🇩🇪' },
+            { name: 'France', flag: '🇫🇷' },
+            { name: 'Japan', flag: '🇯🇵' },
+            { name: 'South Korea', flag: '🇰🇷' },
+            { name: 'Brazil', flag: '🇧🇷' },
+            { name: 'India', flag: '🇮🇳' },
+            { name: 'Australia', flag: '🇦🇺' },
+            { name: 'Canada', flag: '🇨🇦' },
+            { name: 'Italy', flag: '🇮🇹' },
+            { name: 'Spain', flag: '🇪🇸' },
+            { name: 'Mexico', flag: '🇲🇽' },
+            { name: 'Netherlands', flag: '🇳🇱' },
+            { name: 'Sweden', flag: '🇸🇪' },
+            { name: 'Pakistan', flag: '🇵🇰' }
+        ];
+
+        // Set user's location (showing Pakistan since user is in Lahore)
+        document.getElementById('yourLocation').textContent = 'Pakistan 🇵🇰';
+
+        function getRandomCountry() {
+            // Filter out Pakistan for partner location
+            const otherCountries = countries.filter(c => c.name !== 'Pakistan');
+            return otherCountries[Math.floor(Math.random() * otherCountries.length)];
+        }
+
+        function updateOnlineCount() {
+            const baseCount = 1200;
+            const variation = Math.floor(Math.random() * 100) - 50;
+            document.getElementById('onlineCount').textContent = (baseCount + variation).toLocaleString();
+        }
+
+        function startSessionTimer() {
+            connectionStartTime = Date.now();
+            sessionTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - connectionStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('sessionTime').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function stopSessionTimer() {
+            if (sessionTimer) {
+                clearInterval(sessionTimer);
+                sessionTimer = null;
+            }
+            document.getElementById('sessionTime').textContent = '00:00';
+        }
+
+        async function requestMicPermission() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                // Stop the stream immediately as we just needed permission
+                stream.getTracks().forEach(track => track.stop());
+                return true;
+            } catch (error) {
+                alert('Microphone access is required for voice chat. Please allow microphone access and try again.');
+                return false;
+            }
+        }
+
+        async function toggleConnection() {
+            const connectBtn = document.getElementById('connectBtn');
+            const status = document.getElementById('status');
+            const connectionInfo = document.getElementById('connectionInfo');
+            const audioVisualizer = document.getElementById('audioVisualizer');
+
+            if (!isConnected) {
+                // Request microphone permission first
+                const hasPermission = await requestMicPermission();
+                if (!hasPermission) return;
+
+                // Start connection
+                connectBtn.disabled = true;
+                connectBtn.textContent = '🔄 Connecting...';
+                status.textContent = 'Searching for someone to talk with...';
+                status.classList.add('pulse');
+
+                // Simulate connection delay
+                setTimeout(() => {
+                    isConnected = true;
+                    const partner = getRandomCountry();
+                    
+                    document.getElementById('partnerFlag').textContent = partner.flag;
+                    document.getElementById('partnerLocation').textContent = `Connected to ${partner.name}`;
+                    
+                    status.textContent = '🎙️ Connected! You can now talk.';
+                    status.classList.remove('pulse');
+                    connectionInfo.style.display = 'block';
+                    audioVisualizer.style.display = 'flex';
+                    
+                    connectBtn.textContent = '📞 Disconnect';
+                    connectBtn.classList.add('disconnect-btn');
+                    connectBtn.disabled = false;
+                    
+                    startSessionTimer();
+                    
+                    // Simulate some audio activity
+                    setTimeout(() => {
+                        status.textContent = '🗣️ Partner is speaking...';
+                    }, 3000);
+                    
+                    setTimeout(() => {
+                        status.textContent = '🎙️ Your turn to speak!';
+                    }, 8000);
+                    
+                }, 2000 + Math.random() * 3000); // Random delay 2-5 seconds
+                
+            } else {
+                // Disconnect
+                isConnected = false;
+                connectBtn.textContent = '🎙️ Start Talking';
+                connectBtn.classList.remove('disconnect-btn');
+                status.textContent = 'Disconnected. Ready for your next conversation!';
+                connectionInfo.style.display = 'none';
+                audioVisualizer.style.display = 'none';
+                stopSessionTimer();
+                
+                // Show brief message then reset
+                setTimeout(() => {
+                    status.textContent = 'Ready to connect! Press the button below to start talking.';
+                }, 3000);
+            }
+        }
+
+        function adjustVolume() {
+            const volume = document.getElementById('volumeSlider').value;
+            // In a real app, this would adjust the audio volume
+            console.log('Volume adjusted to:', volume + '%');
+        }
+
+        // Start the online count updater
+        updateOnlineCount();
+        onlineCountTimer = setInterval(updateOnlineCount, 10000); // Update every 10 seconds
+
+        // Add some interactivity to the audio visualizer
+        setInterval(() => {
+            if (isConnected) {
+                const waves = document.querySelectorAll('.wave');
+                waves.forEach(wave => {
+                    const height = 10 + Math.random() * 30;
+                    wave.style.height = height + 'px';
+                });
+            }
+        }, 200);
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (onlineCountTimer) clearInterval(onlineCountTimer);
+            if (sessionTimer) clearInterval(sessionTimer);
+        });
+    </script>
+</body>
+</html>
